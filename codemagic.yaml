@@ -17,6 +17,15 @@ workflows:
           cd /Users/builder/clone
           yarn install
 
+      - name: Patch NativeWind for async PostCSS error
+        script: |
+          echo '#!/bin/bash' > patch-nativewind.sh
+          echo 'FILE="node_modules/nativewind/dist/postcss/extract-styles.js"' >> patch-nativewind.sh
+          echo 'sed -i.bak "s/process(css).css/await process(css).then(r => r.css)/" $FILE' >> patch-nativewind.sh
+          echo 'sed -i.bak "s/const result = process(css)/const result = await process(css)/" $FILE' >> patch-nativewind.sh
+          chmod +x patch-nativewind.sh
+          ./patch-nativewind.sh
+
       - name: Pre-bundle JS (to catch errors early)
         script: |
           cd /Users/builder/clone
