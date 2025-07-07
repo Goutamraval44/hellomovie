@@ -21,12 +21,15 @@ workflows:
         script: |
           cd /Users/builder/clone
           FILE="node_modules/nativewind/dist/postcss/extract-styles.js"
-          if [ -f "$FILE" ]; then
+          echo "Verifying NativeWind patch path: $FILE"
+          if grep -q "process(css).css" "$FILE"; then
             echo "Patching NativeWind..."
-            sed -i '' 's/process(css).css/await process(css).then(r => r.css)/' $FILE
-            sed -i '' 's/const result = process(css)/const result = await process(css)/' $FILE
+            sed -i '' 's/process(css).css/await process(css).then(r => r.css)/' "$FILE"
+            sed -i '' 's/const result = process(css)/const result = await process(css)/' "$FILE"
+            echo "Patch applied successfully"
           else
-            echo "NativeWind file not found: $FILE"
+            echo "Pattern not found, showing lines around line 30:"
+            head -n 40 "$FILE" | tail -n 20
             exit 1
           fi
 
@@ -49,3 +52,4 @@ workflows:
 
     artifacts:
       - /Users/builder/clone/android/app/build/outputs/apk/release/app-release.apk
+
