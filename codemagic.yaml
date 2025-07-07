@@ -20,9 +20,8 @@ workflows:
       - name: Build Android APK (Release)
         script: |
           cd /Users/builder/clone/android
+          chmod +x gradlew
           ./gradlew assembleRelease
 
     artifacts:
       - /Users/builder/clone/android/app/build/outputs/apk/release/app-release.apk
-
-   
