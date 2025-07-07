@@ -1,4 +1,4 @@
- workflows:
+workflows:
   react-native-release:
     name: React Native Android Release Build
     max_build_duration: 60
@@ -22,8 +22,12 @@
           cd /Users/builder/clone
           FILE="node_modules/nativewind/dist/postcss/extract-styles.js"
           if [ -f "$FILE" ]; then
+            echo "Patching NativeWind..."
             sed -i '' 's/process(css).css/await process(css).then(r => r.css)/' $FILE
             sed -i '' 's/const result = process(css)/const result = await process(css)/' $FILE
+          else
+            echo "NativeWind file not found: $FILE"
+            exit 1
           fi
 
       - name: Pre-bundle JS (to catch errors early)
