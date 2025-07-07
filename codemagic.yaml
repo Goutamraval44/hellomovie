@@ -1,28 +1,37 @@
 workflows:
-  android-apk:
-    name: Android Release APK
+  android-release:
+    name: React Native Android APK
     max_build_duration: 60
     environment:
-      node: 20.x
+      node: 20.18.1
       java: 17
-      android: sdk
       vars:
-        PACKAGE_NAME: "com.yourcompany.hellomovie"
+        PACKAGE_NAME: "com.hellomovie"
         VERSION_NAME: "1.0.0"
 
     triggering:
       events:
         - push
       branch_patterns:
-        - pattern: "*" 
+        - pattern: "*"
           include: true
 
     scripts:
-      - name: Install deps
-        script: yarn install
-
-      - name: Bundle JS + assets
+      - name: Install dependencies
         script: |
+          yarn install
+
+      - name: Patch NativeWind (only if using NativeWind)
+        script: |
+          # Only needed if NativeWind gives async PostCSS error
+          echo '#!/bin/bash' > patch-nativewind.sh
+          echo 'sed -i "s/process(css)/process(css).then(cb)/g" node_modules/nativewind/dist/index.js' >> patch-nativewind.sh
+          chmod +x patch-nativewind.sh
+          ./patch-nativewind.sh
+
+      - name: Bundle JS & assets
+        script: |
+          mkdir -p android/app/src/main/assets
           yarn react-native bundle \
             --platform android \
             --dev false \
@@ -35,7 +44,7 @@ workflows:
           cd android
           ./gradlew clean
 
-      - name: Build Release APK
+      - name: Build APK
         script: |
           ./gradlew assembleRelease
 
