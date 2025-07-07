@@ -1,12 +1,10 @@
 workflows:
-  react-native-release:
-    name: React Native Android Release Build
+  react-native-debug:
+    name: React Native Android Debug Build (Auto-Signed)
     max_build_duration: 60
     environment:
       node: 20.18.1
       java: 17
-      android_signing:
-        - keystore_reference: my-upload-keystore
 
     scripts:
       - name: Clean parent package files
@@ -18,13 +16,6 @@ workflows:
         script: |
           cd /Users/builder/clone
           yarn install
-
-      - name: Debug signing variables
-        script: |
-          echo "STORE FILE: $MYAPP_UPLOAD_STORE_FILE"
-          echo "STORE PASSWORD: $MYAPP_UPLOAD_STORE_PASSWORD"
-          echo "KEY ALIAS: $MYAPP_UPLOAD_KEY_ALIAS"
-          echo "KEY PASSWORD: $MYAPP_UPLOAD_KEY_PASSWORD"
 
       - name: Patch NativeWind for async PostCSS error
         script: |
@@ -52,14 +43,14 @@ workflows:
             --bundle-output android/app/src/main/assets/index.android.bundle \
             --assets-dest android/app/src/main/res
 
-      - name: Build Android APK (Release)
+      - name: Build Android APK (Debug)
         script: |
           cd /Users/builder/clone/android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleDebug
 
     artifacts:
-      - /Users/builder/clone/android/app/build/outputs/apk/release/*.apk
+      - /Users/builder/clone/android/app/build/outputs/apk/debug/*.apk
 
     publishing:
       email:
