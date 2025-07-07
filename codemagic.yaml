@@ -1,6 +1,6 @@
 workflows:
   android-release:
-    name: React Native APK (Yarn v1)
+    name: Build Android APK
     max_build_duration: 60
     environment:
       node: 20.18.1
@@ -15,14 +15,14 @@ workflows:
         script: |
           yarn install
 
-      - name: Patch NativeWind (optional)
+      - name: Optional NativeWind Patch
         script: |
           echo '#!/bin/bash' > patch-nativewind.sh
           echo 'sed -i "s/process(css)/process(css).then(cb)/g" node_modules/nativewind/dist/index.js' >> patch-nativewind.sh
           chmod +x patch-nativewind.sh
           ./patch-nativewind.sh
 
-      - name: Bundle assets
+      - name: Bundle JavaScript and Assets
         script: |
           mkdir -p android/app/src/main/assets
           yarn react-native bundle \
@@ -32,16 +32,10 @@ workflows:
             --bundle-output android/app/src/main/assets/index.android.bundle \
             --assets-dest android/app/src/main/res
 
-      - name: Clean Gradle
-        script: |
-          cd android
-          ./gradlew clean
-
-      - name: Build APK
+      - name: Build Release APK
         script: |
           cd android
           ./gradlew assembleRelease
 
     artifacts:
       - android/app/build/outputs/**/*.apk
-
