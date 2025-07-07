@@ -1,0 +1,43 @@
+workflows:
+  android-apk:
+    name: Android Release APK
+    max_build_duration: 60
+    environment:
+      node: 20.x
+      java: 17
+      android: sdk
+      vars:
+        PACKAGE_NAME: "com.yourcompany.hellomovie"
+        VERSION_NAME: "1.0.0"
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "*" 
+          include: true
+
+    scripts:
+      - name: Install deps
+        script: yarn install
+
+      - name: Bundle JS + assets
+        script: |
+          yarn react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res
+
+      - name: Clean Gradle
+        script: |
+          cd android
+          ./gradlew clean
+
+      - name: Build Release APK
+        script: |
+          ./gradlew assembleRelease
+
+    artifacts:
+      - android/app/build/outputs/**/*.apk
