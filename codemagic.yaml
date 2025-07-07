@@ -22,14 +22,13 @@ workflows:
           cd /Users/builder/clone
           FILE="node_modules/nativewind/dist/postcss/extract-styles.js"
           echo "Verifying NativeWind patch path: $FILE"
-          if grep -q "process(css).css" "$FILE"; then
-            echo "Patching NativeWind..."
-            sed -i '' 's/process(css).css/await process(css).then(r => r.css)/' "$FILE"
-            sed -i '' 's/const result = process(css)/const result = await process(css)/' "$FILE"
+          if grep -q ".process(cssInput).css;" "$FILE"; then
+            echo "Patching NativeWind (async fix)..."
+            sed -i '' 's/.process(cssInput).css;/await (0, postcss_1.default)(plugins).process(cssInput).then(r => r.css);/' "$FILE"
             echo "Patch applied successfully"
           else
-            echo "Pattern not found, showing lines around line 30:"
-            head -n 40 "$FILE" | tail -n 20
+            echo "Pattern not found, showing debug lines:"
+            head -n 50 "$FILE" | tail -n 30
             exit 1
           fi
 
