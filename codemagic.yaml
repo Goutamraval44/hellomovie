@@ -9,28 +9,23 @@ workflows:
         PACKAGE_NAME: "com.hellomovie"
         VERSION_NAME: "1.0.0"
 
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: "*"
-          include: true
-
     scripts:
       - name: Install dependencies
         script: |
+          cd clone
           yarn install
 
-      - name: Patch NativeWind (only if using NativeWind)
+      - name: Patch NativeWind (optional)
         script: |
-          # Only needed if NativeWind gives async PostCSS error
+          cd clone
           echo '#!/bin/bash' > patch-nativewind.sh
           echo 'sed -i "s/process(css)/process(css).then(cb)/g" node_modules/nativewind/dist/index.js' >> patch-nativewind.sh
           chmod +x patch-nativewind.sh
           ./patch-nativewind.sh
 
-      - name: Bundle JS & assets
+      - name: Bundle assets
         script: |
+          cd clone
           mkdir -p android/app/src/main/assets
           yarn react-native bundle \
             --platform android \
@@ -41,12 +36,13 @@ workflows:
 
       - name: Clean Gradle
         script: |
-          cd android
+          cd clone/android
           ./gradlew clean
 
       - name: Build APK
         script: |
+          cd clone/android
           ./gradlew assembleRelease
 
     artifacts:
-      - android/app/build/outputs/**/*.apk
+      - clone/android/app/build/outputs/**/*.apk
