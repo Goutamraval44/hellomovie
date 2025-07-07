@@ -7,10 +7,10 @@ workflows:
       java: 17
 
     scripts:
-      - name: Downgrade to Yarn v1
+      - name: Enable Corepack & Set Yarn 4.9.2
         script: |
-          corepack disable
-          npm install -g yarn@1.22.22
+          corepack enable
+          corepack prepare yarn@4.9.2 --activate
 
       - name: Install dependencies
         script: |
