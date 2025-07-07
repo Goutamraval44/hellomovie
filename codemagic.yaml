@@ -1,22 +1,32 @@
 workflows:
   android-release:
-    name: React Native APK Build
+    name: Build Android APK (Yarn 4)
     max_build_duration: 60
     environment:
       node: 20.18.1
       java: 17
 
     scripts:
-      - name: Install Yarn Classic
+      - name: Enable Corepack & Yarn 4
         script: |
-          npm install -g yarn@1.22.22
+          cd clone
+          corepack enable
+          corepack prepare yarn@4.9.2 --activate
+
+      - name: Disable strict constraints (TEMP FIX)
+        script: |
+          cd clone
+          echo "enableImmutableInstalls: false" >> .yarnrc.yml
+          echo "nodeLinker: node-modules" >> .yarnrc.yml
 
       - name: Install dependencies
         script: |
+          cd clone
           yarn install
 
-      - name: Bundle JS and Assets
+      - name: Bundle JavaScript and Assets
         script: |
+          cd clone
           mkdir -p android/app/src/main/assets
           yarn react-native bundle \
             --platform android \
@@ -27,9 +37,8 @@ workflows:
 
       - name: Build APK
         script: |
-          cd android
+          cd clone/android
           ./gradlew assembleRelease
 
     artifacts:
-      - android/app/build/outputs/**/*.apk
-
+      - clone/android/app/build/outputs/**/*.apk
