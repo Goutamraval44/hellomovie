@@ -5,10 +5,17 @@ workflows:
     environment:
       node: 20.18.1
       java: 17
-    scripts:
-      - name: Install dependencies
-        script: |
-          yarn install
+      scripts:
+  - name: Clean parent package files
+    script: |
+      rm -f /Users/builder/yarn.lock
+      rm -f /Users/builder/package.json
+
+  - name: Install dependencies
+    script: |
+      cd /Users/builder/clone
+      yarn install
+
       - name: Build Android APK (Release)
         script: |
           cd android
