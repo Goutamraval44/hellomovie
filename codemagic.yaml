@@ -12,20 +12,17 @@ workflows:
     scripts:
       - name: Install dependencies
         script: |
-          cd clone
           yarn install
 
       - name: Patch NativeWind (optional)
         script: |
-          cd clone
           echo '#!/bin/bash' > patch-nativewind.sh
           echo 'sed -i "s/process(css)/process(css).then(cb)/g" node_modules/nativewind/dist/index.js' >> patch-nativewind.sh
           chmod +x patch-nativewind.sh
           ./patch-nativewind.sh
 
-      - name: Bundle assets
+      - name: Bundle JS and Assets
         script: |
-          cd clone
           mkdir -p android/app/src/main/assets
           yarn react-native bundle \
             --platform android \
@@ -36,13 +33,13 @@ workflows:
 
       - name: Clean Gradle
         script: |
-          cd clone/android
+          cd android
           ./gradlew clean
 
-      - name: Build APK
+      - name: Build Release APK
         script: |
-          cd clone/android
+          cd android
           ./gradlew assembleRelease
 
     artifacts:
-      - clone/android/app/build/outputs/**/*.apk
+      - android/app/build/outputs/**/*.apk
