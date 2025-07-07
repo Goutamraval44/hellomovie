@@ -17,6 +17,17 @@ workflows:
           cd /Users/builder/clone
           yarn install
 
+      - name: Pre-bundle JS (to catch errors early)
+        script: |
+          cd /Users/builder/clone
+          mkdir -p android/app/src/main/assets
+          yarn react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res
+
       - name: Build Android APK (Release)
         script: |
           cd /Users/builder/clone/android
