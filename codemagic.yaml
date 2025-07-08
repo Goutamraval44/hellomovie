@@ -43,6 +43,10 @@ workflows:
             --bundle-output android/app/src/main/assets/index.android.bundle \
             --assets-dest android/app/src/main/res
 
+      - name: Increase Gradle heap size
+        script: |
+          export _JAVA_OPTIONS="-Xmx4096m"
+
       - name: Build Android APK (Debug)
         script: |
           cd /Users/builder/clone/android
@@ -103,6 +107,10 @@ workflows:
             --entry-file index.js \
             --bundle-output android/app/src/main/assets/index.android.bundle \
             --assets-dest android/app/src/main/res
+
+      - name: Increase Gradle heap size
+        script: |
+          export _JAVA_OPTIONS="-Xmx4096m"
 
       - name: Build Android APK (Release)
         script: |
