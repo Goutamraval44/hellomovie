@@ -23,4 +23,11 @@ module.exports = {
     'nativewind/babel',
     'react-native-reanimated/plugin',
   ],
+  overrides: [
+    {
+      test: /node_modules[\/\\](query-string|decode-uri-component|strict-uri-encode)/,
+      presets: ['module:@react-native/babel-preset'],
+    },
+  ],
 };
+
