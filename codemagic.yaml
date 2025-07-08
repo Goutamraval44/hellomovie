@@ -17,6 +17,11 @@ workflows:
           cd /Users/builder/clone
           yarn install
 
+      - name: Install metro-react-native-babel-transformer
+        script: |
+          cd /Users/builder/clone
+          yarn add metro-react-native-babel-transformer --dev
+
       - name: Patch NativeWind for async PostCSS error
         script: |
           cd /Users/builder/clone
@@ -81,6 +86,11 @@ workflows:
         script: |
           cd /Users/builder/clone
           yarn install
+
+      - name: Install metro-react-native-babel-transformer
+        script: |
+          cd /Users/builder/clone
+          yarn add metro-react-native-babel-transformer --dev
 
       - name: Patch NativeWind for async PostCSS error
         script: |
