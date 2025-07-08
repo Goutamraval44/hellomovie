@@ -23,8 +23,8 @@ defaultConfig.transformer = {
 
 defaultConfig.watchFolders = [
   ...defaultConfig.watchFolders,
-  ...extraNodeModulesToTranspile.map(p =>
-    path.resolve(__dirname, 'node_modules', p)
+  ...extraNodeModulesToTranspile.map(pkg =>
+    path.resolve(__dirname, 'node_modules', pkg)
   ),
 ];
 
