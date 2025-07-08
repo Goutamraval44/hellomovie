@@ -1,11 +1,31 @@
-const {getDefaultConfig} = require('expo/metro-config');
-const {mergeConfig} = require('@react-native/metro-config');
-/**
- * Metro configuration
- * https://reactnative.dev/docs/metro
- *
- * @type {import('metro-config').MetroConfig}
- */
-const config = {};
+const { getDefaultConfig } = require('expo/metro-config');
+const { mergeConfig } = require('@react-native/metro-config');
+const path = require('path');
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+const defaultConfig = getDefaultConfig(__dirname);
+
+const extraNodeModulesToTranspile = [
+  'query-string',
+  'strict-uri-encode',
+  'decode-uri-component',
+];
+
+defaultConfig.resolver = {
+  ...defaultConfig.resolver,
+  unstable_enableSymlinks: true,
+  resolverMainFields: ['browser', 'main'],
+};
+
+defaultConfig.transformer = {
+  ...defaultConfig.transformer,
+  babelTransformerPath: require.resolve('metro-react-native-babel-transformer'),
+};
+
+defaultConfig.watchFolders = [
+  ...defaultConfig.watchFolders,
+  ...extraNodeModulesToTranspile.map(p =>
+    path.resolve(__dirname, 'node_modules', p)
+  ),
+];
+
+module.exports = mergeConfig(defaultConfig, {});
