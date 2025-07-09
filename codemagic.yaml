@@ -25,16 +25,23 @@ workflows:
       - name: Patch NativeWind for async PostCSS error
         script: |
           cd /Users/builder/clone
-          FILE="node_modules/nativewind/dist/postcss/extract-styles.js"
-          echo "Verifying NativeWind patch at: $FILE"
 
-          if grep -q ".process(cssInput).css;" "$FILE"; then
-            echo "Patching NativeWind..."
-            sed -i '' 's|(0, postcss_1.default)(plugins).process(cssInput).css;|return await (0, postcss_1.default)(plugins).process(cssInput).then(r => r.css);|' "$FILE"
-            sed -i '' 's|function extractStyles|async function extractStyles|' "$FILE"
-            echo "NativeWind patch complete."
-          else
-            echo "Patch skipped: Already applied or pattern not found."
+          echo "Patching NativeWind..."
+
+          # Patch extract-styles.js
+          FILE1="node_modules/nativewind/dist/postcss/extract-styles.js"
+          if [ -f "$FILE1" ]; then
+            sed -i '' 's|process(cssInput).css;|process(cssInput).then(r => r.css);|' "$FILE1"
+            sed -i '' 's|function extractStyles|async function extractStyles|' "$FILE1"
+            echo "Patched: extract-styles.js"
+          fi
+
+          # Patch postcss/index.js
+          FILE2="node_modules/nativewind/postcss/index.js"
+          if [ -f "$FILE2" ]; then
+            sed -i '' 's|return postcss(plugins).process(css, options)|return await postcss(plugins).process(css, options)|' "$FILE2"
+            sed -i '' 's|function process(|async function process(|' "$FILE2"
+            echo "Patched: postcss/index.js"
           fi
 
       - name: Pre-bundle JS (to catch errors early)
@@ -95,16 +102,23 @@ workflows:
       - name: Patch NativeWind for async PostCSS error
         script: |
           cd /Users/builder/clone
-          FILE="node_modules/nativewind/dist/postcss/extract-styles.js"
-          echo "Verifying NativeWind patch at: $FILE"
 
-          if grep -q ".process(cssInput).css;" "$FILE"; then
-            echo "Patching NativeWind..."
-            sed -i '' 's|(0, postcss_1.default)(plugins).process(cssInput).css;|return await (0, postcss_1.default)(plugins).process(cssInput).then(r => r.css);|' "$FILE"
-            sed -i '' 's|function extractStyles|async function extractStyles|' "$FILE"
-            echo "NativeWind patch complete."
-          else
-            echo "Patch skipped: Already applied or pattern not found."
+          echo "Patching NativeWind..."
+
+          # Patch extract-styles.js
+          FILE1="node_modules/nativewind/dist/postcss/extract-styles.js"
+          if [ -f "$FILE1" ]; then
+            sed -i '' 's|process(cssInput).css;|process(cssInput).then(r => r.css);|' "$FILE1"
+            sed -i '' 's|function extractStyles|async function extractStyles|' "$FILE1"
+            echo "Patched: extract-styles.js"
+          fi
+
+          # Patch postcss/index.js
+          FILE2="node_modules/nativewind/postcss/index.js"
+          if [ -f "$FILE2" ]; then
+            sed -i '' 's|return postcss(plugins).process(css, options)|return await postcss(plugins).process(css, options)|' "$FILE2"
+            sed -i '' 's|function process(|async function process(|' "$FILE2"
+            echo "Patched: postcss/index.js"
           fi
 
       - name: Pre-bundle JS for release
